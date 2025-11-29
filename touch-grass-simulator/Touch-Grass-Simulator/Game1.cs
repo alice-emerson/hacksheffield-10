@@ -8,10 +8,16 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    private RenderTarget2D _renderTarget;
+    private const int NATIVE_WIN_HEIGHT = 224;
+    private const int NATIVE_WIN_WIDTH = 320;
+    private const int RENDER_SCALE = 4;
 
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
+        _graphics.PreferredBackBufferWidth = NATIVE_WIN_WIDTH * RENDER_SCALE;
+        _graphics.PreferredBackBufferHeight = NATIVE_WIN_HEIGHT * RENDER_SCALE;
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
     }
@@ -19,7 +25,7 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
-
+        _renderTarget = new RenderTarget2D(GraphicsDevice, NATIVE_WIN_WIDTH, NATIVE_WIN_WIDTH);
         base.Initialize();
     }
 
@@ -42,10 +48,15 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
+        GraphicsDevice.SetRenderTarget(_renderTarget);
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // TODO: Add your drawing code here
-
+        // Render scaled game
+        GraphicsDevice.SetRenderTarget(null);
+        _spriteBatch.Begin();
+        _spriteBatch.Draw(_renderTarget, new Rectangle(0, 0, NATIVE_WIN_WIDTH*RENDER_SCALE, NATIVE_WIN_HEIGHT*RENDER_SCALE), Color.White);
+        _spriteBatch.End();
         base.Draw(gameTime);
     }
 }
