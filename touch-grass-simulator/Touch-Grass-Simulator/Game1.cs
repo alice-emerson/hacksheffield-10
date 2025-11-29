@@ -1,18 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Touch_Grass_Simulator.Types;
+
 
 namespace Touch_Grass_Simulator;
 
+public struct TextureGroup
+{
+    public Texture2D dirt;
+}
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private RenderTarget2D _renderTarget;
-    private const int NATIVE_WIN_HEIGHT = 224;
-    private const int NATIVE_WIN_WIDTH = 320;
-    private const int RENDER_SCALE = 4;
-    private Texture2D dirtTexture;
+    private const int NATIVE_WIN_HEIGHT = 448;
+    private const int NATIVE_WIN_WIDTH = 640;
+    private const int RENDER_SCALE = 2;
+    private TextureGroup gameTextures;
+    private TileMap backgroundTileMap;
 
     public Game1()
     {
@@ -34,7 +41,8 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        dirtTexture = Content.Load<Texture2D>("Textures/DIRT");
+        gameTextures.dirt = Content.Load<Texture2D>("Textures/DIRT");
+        backgroundTileMap = new TileMap("./Tile-Maps/bg_tile_map.txt");
     }
 
     protected override void Update(GameTime gameTime)
@@ -53,7 +61,7 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _spriteBatch.Begin();
-        _spriteBatch.Draw(dirtTexture, Vector2.Zero, Color.White);
+        backgroundTileMap.Draw(_spriteBatch, gameTextures);
         _spriteBatch.End();
 
         // TODO: Add your drawing code here
