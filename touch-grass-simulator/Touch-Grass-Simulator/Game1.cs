@@ -12,6 +12,7 @@ public class Game1 : Game
     private const int NATIVE_WIN_HEIGHT = 224;
     private const int NATIVE_WIN_WIDTH = 320;
     private const int RENDER_SCALE = 4;
+    private Texture2D dirtTexture;
 
     public Game1()
     {
@@ -25,7 +26,7 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
-        _renderTarget = new RenderTarget2D(GraphicsDevice, NATIVE_WIN_WIDTH, NATIVE_WIN_WIDTH);
+        _renderTarget = new RenderTarget2D(GraphicsDevice, NATIVE_WIN_WIDTH, NATIVE_WIN_HEIGHT);
         base.Initialize();
     }
 
@@ -33,7 +34,7 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        // TODO: use this.Content to load your game content here
+        dirtTexture = Content.Load<Texture2D>("Textures/DIRT");
     }
 
     protected override void Update(GameTime gameTime)
@@ -51,11 +52,15 @@ public class Game1 : Game
         GraphicsDevice.SetRenderTarget(_renderTarget);
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
+        _spriteBatch.Begin();
+        _spriteBatch.Draw(dirtTexture, Vector2.Zero, Color.White);
+        _spriteBatch.End();
+
         // TODO: Add your drawing code here
         // Render scaled game
         GraphicsDevice.SetRenderTarget(null);
-        _spriteBatch.Begin();
-        _spriteBatch.Draw(_renderTarget, new Rectangle(0, 0, NATIVE_WIN_WIDTH*RENDER_SCALE, NATIVE_WIN_HEIGHT*RENDER_SCALE), Color.White);
+        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        _spriteBatch.Draw(_renderTarget, new Rectangle(0,0,NATIVE_WIN_WIDTH*RENDER_SCALE,NATIVE_WIN_HEIGHT*RENDER_SCALE), Color.White);
         _spriteBatch.End();
         base.Draw(gameTime);
     }

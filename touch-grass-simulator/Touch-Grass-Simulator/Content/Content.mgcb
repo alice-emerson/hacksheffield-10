@@ -13,3 +13,7 @@
 
 #---------------------------------- Content ---------------------------------#
 
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=false
+/build:Textures/DIRT.png
