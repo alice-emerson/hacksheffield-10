@@ -9,6 +9,22 @@ namespace Touch_Grass_Simulator;
 public struct TextureGroup
 {
     public Texture2D dirt;
+
+    public Texture2D short_grass;
+    public Texture2D medium_grass;
+    public Texture2D tall_grass;
+
+    public Texture2D short_blue_flower;
+    public Texture2D medium_blue_flower;
+    public Texture2D tall_blue_flower;
+
+    public Texture2D short_pink_flower;
+    public Texture2D medium_pink_flower;
+    public Texture2D tall_pink_flower;
+
+    public Texture2D short_sun_flower;
+    public Texture2D medium_sun_flower;
+    public Texture2D tall_sun_flower;
 }
 public class Game1 : Game
 {
@@ -20,6 +36,7 @@ public class Game1 : Game
     private const int RENDER_SCALE = 2;
     private TextureGroup gameTextures;
     private TileMap backgroundTileMap;
+    private TileMap foregroundTileMap;
 
     public Game1()
     {
@@ -42,7 +59,28 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         gameTextures.dirt = Content.Load<Texture2D>("Textures/DIRT");
+
+        gameTextures.short_blue_flower = Content.Load<Texture2D>("Textures/small_b_flower");
+        gameTextures.medium_blue_flower = Content.Load<Texture2D>("Textures/med_b_flower");;
+        gameTextures.tall_blue_flower = Content.Load<Texture2D>("Textures/long_b_flower");;
+
+        gameTextures.short_pink_flower = Content.Load<Texture2D>("Textures/small_pink_flower");
+        gameTextures.medium_pink_flower = Content.Load<Texture2D>("Textures/med_pink_flower");
+        gameTextures.tall_pink_flower = Content.Load<Texture2D>("Textures/long_pink_flower");
+
+        gameTextures.short_sun_flower = Content.Load<Texture2D>("Textures/small_sunflower");
+        gameTextures.medium_sun_flower= Content.Load<Texture2D>("Textures/med_sunflower");
+        gameTextures.tall_sun_flower = Content.Load<Texture2D>("Textures/tall_sunflower");
+
+        gameTextures.short_grass = Content.Load<Texture2D>("Textures/small_grass");
+        gameTextures.medium_grass = Content.Load<Texture2D>("Textures/medium_grass");
+        gameTextures.tall_grass = Content.Load<Texture2D>("Textures/long_grass");
+
         backgroundTileMap = new TileMap("./Tile-Maps/bg_tile_map.txt");
+        foregroundTileMap = new TileMap("./Tile-Maps/fg_tile_map.txt");
+
+        Texture2D defaultMouseTexture = Content.Load<Texture2D>("Textures/void");
+        Mouse.SetCursor(MouseCursor.FromTexture2D(defaultMouseTexture, 0, 0));
     }
 
     protected override void Update(GameTime gameTime)
@@ -62,6 +100,7 @@ public class Game1 : Game
 
         _spriteBatch.Begin();
         backgroundTileMap.Draw(_spriteBatch, gameTextures);
+        foregroundTileMap.Draw(_spriteBatch, gameTextures);
         _spriteBatch.End();
 
         // TODO: Add your drawing code here

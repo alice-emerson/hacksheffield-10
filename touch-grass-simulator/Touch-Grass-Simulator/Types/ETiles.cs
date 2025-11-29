@@ -1,6 +1,23 @@
 namespace Touch_Grass_Simulator.Types;
 public enum ETiles
 {
-    DIRT,
     NONE,
+    
+    DIRT,
+
+    SHORT_BLUE_FLOWER,
+    MEDIUM_BLUE_FLOWER,
+    TALL_BLUE_FLOWER,
+
+    SHORT_PINK_FLOWER,
+    MEDIUM_PINK_FLOWER,
+    TALL_PINK_FLOWER,
+
+    SHORT_SUN_FLOWER,
+    MEDIUM_SUN_FLOWER,
+    TALL_SUN_FLOWER,
+
+    SHORT_GRASS,
+    MEDIUM_GRASS,
+    TALL_GRASS,
 }

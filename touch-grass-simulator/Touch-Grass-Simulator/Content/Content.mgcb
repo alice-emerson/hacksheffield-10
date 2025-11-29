@@ -34,3 +34,7 @@
 /build:Textures/tall_sunflower.png
 /build:Textures/med_sunflower.png
 /build:Textures/small_sunflower.png
+
+/build:Textures/can_still.png
+/build:Textures/can_watering.png
+/build:Textures/void.png
