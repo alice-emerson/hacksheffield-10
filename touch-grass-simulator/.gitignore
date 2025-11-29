@@ -1,0 +1,5 @@
+.vscode
+.direnv
+bin
+.envrc
+obj
