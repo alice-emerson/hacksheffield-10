@@ -4,17 +4,16 @@ use log::warn;
 use tokio::{sync::mpsc, task::JoinHandle};
 use wiimote_rs::{input::InputReport, output::{Addressing, OutputReport}, prelude::*};
 
+mod udraw;
+
+pub use udraw::UDrawPacket;
+
+#[derive(Clone, Debug)]
 pub enum RemoteEvent {
     KeyDown(Key),
     KeyUp(Key),
-    Tablet(TabletUpdate),
+    Tablet(UDrawPacket),
     Other(String),
-}
-
-pub struct TabletUpdate {
-    pub x: f64,
-    pub y: f64,
-    pub p: f64,
 }
 
 pub struct CallibrationData {
@@ -24,9 +23,8 @@ pub struct CallibrationData {
     pub y_max: u16,
 }
 
+#[derive(Clone, Copy, Debug)]
 pub enum Key {
-    PenL,
-    PenU,
     DPadUp,
     DPadDown,
     DPadLeft,
@@ -47,10 +45,22 @@ pub struct RemoteHandle {
     task: JoinHandle<WiimoteResult<()>>,
 }
 
+impl RemoteHandle {
+    pub async fn recv_event(&mut self) -> Option<RemoteEvent> {
+        self.events.recv().await
+    }
+}
+
 #[derive(Debug)]
 pub struct ManagerHandle {
     remotes: mpsc::UnboundedReceiver<RemoteHandle>,
     task: JoinHandle<()>,
+}
+
+impl ManagerHandle {
+    pub async fn get_remote(&mut self) -> Option<RemoteHandle> {
+        self.remotes.recv().await
+    }
 }
 
 pub async fn launch_receiver() -> ManagerHandle {
@@ -86,10 +96,9 @@ fn run_manager(tx_remotes: mpsc::UnboundedSender<RemoteHandle>) {
 const READ_TIMEOUT: usize = 10;
 const POLL_INTERVAL: Duration = Duration::from_millis(25);
 
-const READ_UDRAW: OutputReport = OutputReport::ReadMemory(Addressing::control_registers(0xA40000, 6));
+const READ_UDRAW: OutputReport = OutputReport::ReadMemory(Addressing::control_registers(0xA4AD00, 6));
 
 fn run_remote(remote: Arc<std::sync::Mutex<WiimoteDevice>>) -> RemoteHandle {
-    println!("Remote connected!");
     let (send, recv) = mpsc::unbounded_channel();
 
     let task = tokio::task::spawn_blocking(move || {
@@ -103,10 +112,22 @@ fn run_remote(remote: Arc<std::sync::Mutex<WiimoteDevice>>) -> RemoteHandle {
             }
             if let Ok(evt) = remote.read_timeout(READ_TIMEOUT) {
                 match evt {
-                    InputReport::StatusInformation(status_data) => println!("STA {status_data:?}"),
-                    InputReport::ReadMemory(memory_data) => println!("MEM {memory_data:?}"),
-                    InputReport::Acknowledge(acknowledge_data) => println!("ACK {acknowledge_data:?}"),
-                    InputReport::DataReport(id, wiimote_data) => println!("DAT {id} {wiimote_data:?}"),
+                    InputReport::StatusInformation(status_data) => eprintln!("STA {status_data:?}"),
+                    InputReport::ReadMemory(memory_data) => {
+                        if memory_data.address_offset() == 0xAD00 {
+                            // uDraw
+                            let [b0, b1, b2, b3, b4, b5, ..] = memory_data.data;
+                            let packet = UDrawPacket::from_bytes([b0, b1, b2, b3, b4, b5]);
+                            match send.send(RemoteEvent::Tablet(packet)) {
+                                Ok(()) => {}
+                                Err(e) => warn!("Send failed: {e}"),
+                            }
+                        } else {
+                            eprintln!("MEM {memory_data:?}");
+                        }
+                    },
+                    InputReport::Acknowledge(acknowledge_data) => eprintln!("ACK {acknowledge_data:?}"),
+                    InputReport::DataReport(id, wiimote_data) => eprintln!("DAT {id} {wiimote_data:?}"),
                 }
             }
         }
