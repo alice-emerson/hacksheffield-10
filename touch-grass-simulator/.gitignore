@@ -4,3 +4,4 @@ bin
 .envrc
 obj
 .mgstats
+.DS_STORE
