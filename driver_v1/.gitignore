@@ -1,0 +1,5 @@
+/.direnv
+/target
+/Cargo.lock
+/flake.lock
+/.envrc
