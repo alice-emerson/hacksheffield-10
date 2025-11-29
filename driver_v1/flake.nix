@@ -18,6 +18,7 @@
             llvmPackages.bintools
             rustup
             bluez
+            udev
             stdenvNoCC
           ]);
 
