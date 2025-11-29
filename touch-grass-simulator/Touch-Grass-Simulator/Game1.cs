@@ -25,24 +25,30 @@ public struct TextureGroup
     public Texture2D short_sun_flower;
     public Texture2D medium_sun_flower;
     public Texture2D tall_sun_flower;
+
 }
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    private RenderTarget2D _renderTarget;
-    private const int NATIVE_WIN_HEIGHT = 448;
-    private const int NATIVE_WIN_WIDTH = 640;
+    private RenderTarget2D _gameRenderTarget;
+    private RenderTarget2D _uiRenderTarget;
+    private const int GAME_WIN_HEIGHT = 448;
+    private const int GAME_WIN_WIDTH = 640;
+    private const int UI_WIN_HEIGHT = 448;
+    private const int UI_WIN_WIDTH = 64;
     private const int RENDER_SCALE = 2;
     private TextureGroup gameTextures;
     private TileMap backgroundTileMap;
     private TileMap foregroundTileMap;
+    private CustomMouse customMouse;
 
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
-        _graphics.PreferredBackBufferWidth = NATIVE_WIN_WIDTH * RENDER_SCALE;
-        _graphics.PreferredBackBufferHeight = NATIVE_WIN_HEIGHT * RENDER_SCALE;
+        _graphics.PreferredBackBufferWidth = GAME_WIN_WIDTH * RENDER_SCALE + UI_WIN_WIDTH * RENDER_SCALE;
+        _graphics.PreferredBackBufferHeight = GAME_WIN_HEIGHT * RENDER_SCALE;
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
     }
@@ -50,7 +56,8 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
-        _renderTarget = new RenderTarget2D(GraphicsDevice, NATIVE_WIN_WIDTH, NATIVE_WIN_HEIGHT);
+        _gameRenderTarget = new RenderTarget2D(GraphicsDevice, GAME_WIN_WIDTH, GAME_WIN_HEIGHT);
+        _uiRenderTarget = new RenderTarget2D(GraphicsDevice, UI_WIN_WIDTH, UI_WIN_HEIGHT);
         base.Initialize();
     }
 
@@ -81,6 +88,12 @@ public class Game1 : Game
 
         Texture2D defaultMouseTexture = Content.Load<Texture2D>("Textures/void");
         Mouse.SetCursor(MouseCursor.FromTexture2D(defaultMouseTexture, 0, 0));
+
+        Texture2D wateringCanOn = Content.Load<Texture2D>("Textures/can_watering");
+        Texture2D wateringCanOff = Content.Load<Texture2D>("Textures/can_still");
+
+        customMouse = new CustomMouse(wateringCanOff, wateringCanOn);
+
     }
 
     protected override void Update(GameTime gameTime)
@@ -90,12 +103,19 @@ public class Game1 : Game
 
         // TODO: Add your update logic here
 
+        MouseState currentMouseState = Mouse.GetState();
+        bool isMouseClicked;
+        if (currentMouseState.LeftButton == ButtonState.Pressed) isMouseClicked = true;
+        else isMouseClicked = false;
+        customMouse.Update(new Vector2(currentMouseState.X, currentMouseState.Y), isMouseClicked);
+
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.SetRenderTarget(_renderTarget);
+        // Render Game
+        GraphicsDevice.SetRenderTarget(_gameRenderTarget);
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _spriteBatch.Begin();
@@ -103,11 +123,15 @@ public class Game1 : Game
         foregroundTileMap.Draw(_spriteBatch, gameTextures);
         _spriteBatch.End();
 
-        // TODO: Add your drawing code here
+        // Render UI
+        _spriteBatch.Begin();
+        _spriteBatch.End();
+
         // Render scaled game
         GraphicsDevice.SetRenderTarget(null);
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        _spriteBatch.Draw(_renderTarget, new Rectangle(0,0,NATIVE_WIN_WIDTH*RENDER_SCALE,NATIVE_WIN_HEIGHT*RENDER_SCALE), Color.White);
+        _spriteBatch.Draw(_gameRenderTarget, new Rectangle(0,0,GAME_WIN_WIDTH*RENDER_SCALE, GAME_WIN_HEIGHT*RENDER_SCALE), Color.White);
+        customMouse.Draw(_spriteBatch);
         _spriteBatch.End();
         base.Draw(gameTime);
     }
