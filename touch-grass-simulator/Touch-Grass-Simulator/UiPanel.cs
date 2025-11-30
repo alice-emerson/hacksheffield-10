@@ -18,12 +18,12 @@ public class UiPanel
     {
         this.panelFrame = panelFrame;
         
-        this.pinkFlowerSeeds = new UiItem(pinkFlowerSeeds, itemFrame, 0);
-        this.blueFlowerSeeds = new UiItem(blueFlowerSeeds, itemFrame, 1);
-        this.sunflowerSeeds = new UiItem(sunflowerSeeds, itemFrame, 2);
-        this.grassSeeds = new UiItem(grassSeeds, itemFrame, 3);
-        this.wateringCan = new UiItem(wateringCan, itemFrame, 4);
-        this.gardenCutters = new UiItem(gardenCutters, itemFrame, 5);
+        this.pinkFlowerSeeds = new UiItem(pinkFlowerSeeds, itemFrame, EMouseMode.PINK_FLOWER_SEEDS, 0);
+        this.blueFlowerSeeds = new UiItem(blueFlowerSeeds, itemFrame, EMouseMode.BLUE_FLOWER_SEEDS, 1);
+        this.sunflowerSeeds = new UiItem(sunflowerSeeds, itemFrame, EMouseMode.SUNFLOWER_SEEDS, 2);
+        this.grassSeeds = new UiItem(grassSeeds, itemFrame, EMouseMode.GRASS_SEEDS, 3);
+        this.wateringCan = new UiItem(wateringCan, itemFrame, EMouseMode.WATERING_CAN, 4);
+        this.gardenCutters = new UiItem(gardenCutters, itemFrame, EMouseMode.GARDEN_CUTTERS, 5);
     }
 
     public void Draw(SpriteBatch _spriteBatch)

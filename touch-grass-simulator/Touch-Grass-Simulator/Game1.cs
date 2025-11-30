@@ -34,11 +34,11 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     private RenderTarget2D _gameRenderTarget;
     private RenderTarget2D _uiRenderTarget;
-    private const int GAME_WIN_HEIGHT = 448;
-    private const int GAME_WIN_WIDTH = 640;
-    private const int UI_WIN_HEIGHT = 448;
-    private const int UI_WIN_WIDTH = 64;
-    private const int RENDER_SCALE = 2;
+    public const int GAME_WIN_HEIGHT = 448;
+    public const int GAME_WIN_WIDTH = 640;
+    public const int UI_WIN_HEIGHT = 448;
+    public const int UI_WIN_WIDTH = 64;
+    public const int RENDER_SCALE = 2;
     private TextureGroup gameTextures;
     private TileMap backgroundTileMap;
     private TileMap foregroundTileMap;
@@ -127,7 +127,9 @@ public class Game1 : Game
         bool isMouseClicked;
         if (currentMouseState.LeftButton == ButtonState.Pressed) isMouseClicked = true;
         else isMouseClicked = false;
-        customMouse.Update(new Vector2(currentMouseState.X, currentMouseState.Y), isMouseClicked);
+        customMouse.Update(new Vector2(currentMouseState.X, currentMouseState.Y), currentToolOption, isMouseClicked);
+
+        currentToolOption = uiPanel.Update(currentMouseState, currentToolOption);
 
         base.Update(gameTime);
     }

@@ -76,10 +76,16 @@ public class CustomMouse
 
     }
 
-    public void Update(Vector2 currentMousePos, bool isMouseClicked)
+    public void Update(Vector2 currentMousePos, EMouseMode newMouseMode ,bool isMouseClicked)
     {
         this.isMouseClicked = isMouseClicked;
         this.currentMousePos = currentMousePos;
+        this.currentMode = newMouseMode;
         // TODO: Add logic for watering plants
+    }
+
+    public static Vector2 DownscaleMousePosition(Vector2 scaledMousePosition, int scaleFactor)
+    {
+        return new Vector2(scaledMousePosition.X / scaleFactor, scaledMousePosition.Y / scaleFactor);
     }
 }
