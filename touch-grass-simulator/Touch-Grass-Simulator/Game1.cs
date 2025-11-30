@@ -116,8 +116,8 @@ public class Game1 : Game
         Texture2D blueSeeds = Content.Load<Texture2D>("Textures/small_b_flower");
         Texture2D sunSeeds = Content.Load<Texture2D>("Textures/small_sunflower");
         Texture2D grassSeeds = Content.Load<Texture2D>("Textures/small_grass");
-        Texture2D cutters = Content.Load<Texture2D>("Textures/cutter-temp");
-        Texture2D hand = Content.Load<Texture2D>("Textures/hand-temp");
+        Texture2D cutters = Content.Load<Texture2D>("Textures/scythe");
+        Texture2D hand = Content.Load<Texture2D>("Textures/hand");
 
         customMouse = new CustomMouse(wateringCanOff, wateringCanOn, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, cutters, hand, currentToolOption);
 

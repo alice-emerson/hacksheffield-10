@@ -39,8 +39,8 @@
 /build:Textures/can_icon.png
 /build:Textures/can_watering.png
 /build:Textures/void.png
-/build:Textures/cutter-temp.png
-/build:Textures/hand-temp.png
+/build:Textures/scythe.png
+/build:Textures/hand.png
 
 /build:Textures/UI_Panel.png
 /build:Textures/Item_Frame.png

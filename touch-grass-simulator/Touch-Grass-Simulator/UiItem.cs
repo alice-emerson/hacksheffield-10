@@ -27,7 +27,14 @@ public class UiItem
 
     public void Draw(SpriteBatch _spriteBatch)
     {
-        _spriteBatch.Draw(frameTexture, outerPosition, this.tintColour);
+        if (this.mouseMode == EMouseMode.HAND)
+        {
+            _spriteBatch.Draw(frameTexture, outerPosition, Color.LightGreen);
+        }
+        else
+        {
+            _spriteBatch.Draw(frameTexture, outerPosition, this.tintColour);
+        }
         _spriteBatch.Draw(texture, innerPosition, this.tintColour);
     }
 
