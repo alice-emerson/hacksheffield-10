@@ -109,21 +109,22 @@ public class Game1 : Game
 
         Texture2D wateringCanOn = Content.Load<Texture2D>("Textures/can_watering");
         Texture2D wateringCanOff = Content.Load<Texture2D>("Textures/can_still");
+        Texture2D wateringCanIcon = Content.Load<Texture2D>("Textures/can_icon");
 
         // Temp tool textures
         Texture2D pinkSeeds = Content.Load<Texture2D>("Textures/small_pink_flower");
         Texture2D blueSeeds = Content.Load<Texture2D>("Textures/small_b_flower");
         Texture2D sunSeeds = Content.Load<Texture2D>("Textures/small_sunflower");
         Texture2D grassSeeds = Content.Load<Texture2D>("Textures/small_grass");
-        Texture2D cutters = Content.Load<Texture2D>("Textures/DIRT");
-        Texture2D hand = Content.Load<Texture2D>("Textures/DIRT");
+        Texture2D cutters = Content.Load<Texture2D>("Textures/cutter-temp");
+        Texture2D hand = Content.Load<Texture2D>("Textures/hand-temp");
 
         customMouse = new CustomMouse(wateringCanOff, wateringCanOn, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, cutters, hand, currentToolOption);
 
         Texture2D uiFrame = Content.Load<Texture2D>("Textures/UI_Panel");
         Texture2D itemFrame = Content.Load<Texture2D>("Textures/Item_Frame");
 
-        uiPanel = new UiPanel(uiFrame, itemFrame, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, wateringCanOff, cutters, hand);
+        uiPanel = new UiPanel(uiFrame, itemFrame, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, wateringCanIcon, cutters, hand);
 
         stats.total_blue_flowers = 0;
         stats.total_grass = 0;
