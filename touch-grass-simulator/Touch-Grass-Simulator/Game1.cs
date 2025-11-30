@@ -131,6 +131,8 @@ public class Game1 : Game
 
         currentToolOption = uiPanel.Update(currentMouseState, currentToolOption);
 
+        foregroundTileMap.Update(currentMouseState, currentToolOption, gameTime.ElapsedGameTime.Milliseconds);
+
         base.Update(gameTime);
     }
 

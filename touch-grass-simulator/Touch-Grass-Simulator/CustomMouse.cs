@@ -81,7 +81,6 @@ public class CustomMouse
         this.isMouseClicked = isMouseClicked;
         this.currentMousePos = currentMousePos;
         this.currentMode = newMouseMode;
-        // TODO: Add logic for watering plants
     }
 
     public static Vector2 DownscaleMousePosition(Vector2 scaledMousePosition, int scaleFactor)

@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using Touch_Grass_Simulator.Types;
 
 using System.IO;
+using System.Collections;
+using System;
 
 namespace Touch_Grass_Simulator;
 
@@ -12,6 +14,7 @@ public class TileMap
     private ETiles[,] tiles;
     private const int MAP_WIDTH = 20;
     private const int MAP_HEIGHT = 14;
+    private int elapsedTimeSinceToolUse = 0; // in miliseconds
     public TileMap(ETiles[,] tiles)
     {
         this.tiles = tiles;
@@ -194,4 +197,83 @@ public class TileMap
         }
         return tiles;
     }
+
+    public void Update(MouseState currentMouseState, EMouseMode currentTool, int elapsedTimeSinceToolUse)
+    {
+        if (currentMouseState.X < Game1.GAME_WIN_WIDTH * Game1.RENDER_SCALE 
+            && currentMouseState.LeftButton == ButtonState.Pressed
+            && this.elapsedTimeSinceToolUse > 500) // Not in menu, button pressed, cooldown expired.
+        {   
+            this.elapsedTimeSinceToolUse = 0;
+
+            if (currentTool == EMouseMode.WATERING_CAN)
+            {
+                (int,int) currentTile = getSelectedTile(currentMouseState);
+                bool wateredPlant = true;
+                
+                switch (tiles[currentTile.Item1, currentTile.Item2])
+                {
+                    case ETiles.SHORT_BLUE_FLOWER:
+                        {
+                            tiles[currentTile.Item1, currentTile.Item2] = ETiles.MEDIUM_BLUE_FLOWER;
+                            break;
+                        }
+                    case ETiles.MEDIUM_BLUE_FLOWER:
+                        {
+                            tiles[currentTile.Item1, currentTile.Item2] = ETiles.TALL_BLUE_FLOWER;
+                            break;
+                        }
+
+                    case ETiles.SHORT_PINK_FLOWER:
+                        {
+                            tiles[currentTile.Item1, currentTile.Item2] = ETiles.MEDIUM_PINK_FLOWER;
+                            break;
+                        }
+                    case ETiles.MEDIUM_PINK_FLOWER:
+                        {
+                            tiles[currentTile.Item1, currentTile.Item2] = ETiles.TALL_PINK_FLOWER;
+                            break;
+                        }
+
+                    case ETiles.SHORT_SUN_FLOWER:
+                        {
+                            tiles[currentTile.Item1, currentTile.Item2] = ETiles.MEDIUM_SUN_FLOWER;
+                            break;
+                        }
+                    case ETiles.MEDIUM_SUN_FLOWER:
+                        {
+                            tiles[currentTile.Item1, currentTile.Item2] = ETiles.TALL_SUN_FLOWER;
+                            break;
+                        }
+
+                    case ETiles.SHORT_GRASS:
+                        {
+                            tiles[currentTile.Item1, currentTile.Item2] = ETiles.MEDIUM_GRASS;
+                            break;
+                        }
+                    case ETiles.MEDIUM_GRASS:
+                        {
+                            tiles[currentTile.Item1, currentTile.Item2] = ETiles.TALL_GRASS;
+                            break;
+                        }
+
+                    default:
+                            {
+                                wateredPlant = false;
+                                break;
+                            }
+                }
+            }
+        }
+        this.elapsedTimeSinceToolUse += elapsedTimeSinceToolUse;
+        if (this.elapsedTimeSinceToolUse > 10000) this.elapsedTimeSinceToolUse = 10000;
+        Console.WriteLine(this.elapsedTimeSinceToolUse);
+    }
+
+    public (int, int) getSelectedTile(MouseState currentMouseState)
+    {
+        int column = (int)((currentMouseState.X / Game1.RENDER_SCALE) / Tile.TILE_SIZE);
+        int row = (int)((currentMouseState.Y / Game1.RENDER_SCALE) / Tile.TILE_SIZE);
+        return(row, column);
+    } 
 }
