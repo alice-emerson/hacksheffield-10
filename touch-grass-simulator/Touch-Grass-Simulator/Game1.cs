@@ -43,6 +43,8 @@ public class Game1 : Game
     private TileMap backgroundTileMap;
     private TileMap foregroundTileMap;
     private CustomMouse customMouse;
+    private EMouseMode currentToolOption = EMouseMode.WATERING_CAN;
+    private UiPanel uiPanel;
 
     public Game1()
     {
@@ -58,12 +60,17 @@ public class Game1 : Game
         // TODO: Add your initialization logic here
         _gameRenderTarget = new RenderTarget2D(GraphicsDevice, GAME_WIN_WIDTH, GAME_WIN_HEIGHT);
         _uiRenderTarget = new RenderTarget2D(GraphicsDevice, UI_WIN_WIDTH, UI_WIN_HEIGHT);
+        {
+            
+        }
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+        // Game map textures
 
         gameTextures.dirt = Content.Load<Texture2D>("Textures/DIRT");
 
@@ -86,14 +93,27 @@ public class Game1 : Game
         backgroundTileMap = new TileMap("./Tile-Maps/bg_tile_map.txt");
         foregroundTileMap = new TileMap("./Tile-Maps/fg_tile_map.txt");
 
+        // Tool textures
+
         Texture2D defaultMouseTexture = Content.Load<Texture2D>("Textures/void");
         Mouse.SetCursor(MouseCursor.FromTexture2D(defaultMouseTexture, 0, 0));
 
         Texture2D wateringCanOn = Content.Load<Texture2D>("Textures/can_watering");
         Texture2D wateringCanOff = Content.Load<Texture2D>("Textures/can_still");
 
-        customMouse = new CustomMouse(wateringCanOff, wateringCanOn);
+        // Temp tool textures
+        Texture2D pinkSeeds = Content.Load<Texture2D>("Textures/small_pink_flower");
+        Texture2D blueSeeds = Content.Load<Texture2D>("Textures/small_b_flower");
+        Texture2D sunSeeds = Content.Load<Texture2D>("Textures/small_sunflower");
+        Texture2D grassSeeds = Content.Load<Texture2D>("Textures/small_grass");
+        Texture2D cutters = Content.Load<Texture2D>("Textures/DIRT");
 
+        customMouse = new CustomMouse(wateringCanOff, wateringCanOn, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, cutters, currentToolOption);
+
+        Texture2D uiFrame = Content.Load<Texture2D>("Textures/UI_Panel");
+        Texture2D itemFrame = Content.Load<Texture2D>("Textures/Item_Frame");
+
+        uiPanel = new UiPanel(uiFrame, itemFrame, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, wateringCanOff, cutters);
     }
 
     protected override void Update(GameTime gameTime)
@@ -124,13 +144,16 @@ public class Game1 : Game
         _spriteBatch.End();
 
         // Render UI
+        GraphicsDevice.SetRenderTarget(_uiRenderTarget);
         _spriteBatch.Begin();
+        uiPanel.Draw(_spriteBatch);
         _spriteBatch.End();
 
         // Render scaled game
         GraphicsDevice.SetRenderTarget(null);
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         _spriteBatch.Draw(_gameRenderTarget, new Rectangle(0,0,GAME_WIN_WIDTH*RENDER_SCALE, GAME_WIN_HEIGHT*RENDER_SCALE), Color.White);
+        _spriteBatch.Draw(_uiRenderTarget, new Rectangle(GAME_WIN_WIDTH*RENDER_SCALE,0,UI_WIN_WIDTH*RENDER_SCALE, UI_WIN_HEIGHT*RENDER_SCALE), Color.White);
         customMouse.Draw(_spriteBatch);
         _spriteBatch.End();
         base.Draw(gameTime);
