@@ -7,7 +7,9 @@ using InfluxDB3.Client.Write;
 
 public class InfluxDB
 {
-    private InfluxDBClient dbClient;
+    public InfluxDBClient dbClient;
+
+    public const string databaseTitle = "Grass Touching";
 
     public InfluxDB()
     {
@@ -33,34 +35,5 @@ public class InfluxDB
         };
 
         dbClient = new InfluxDBClient(config);
-
-        const string database = "Grass Touching";
-
-        var points = new[]
-        {
-            PointData.Measurement("census")
-                .SetTag("location", "Klamath")
-                .SetField("bees", 23),
-            PointData.Measurement("census")
-                .SetTag("location", "Portland")
-                .SetField("ants", 30),
-            PointData.Measurement("census")
-                .SetTag("location", "Klamath")
-                .SetField("bees", 28),
-            PointData.Measurement("census")
-                .SetTag("location", "Portland")
-                .SetField("ants", 32),
-            PointData.Measurement("census")
-                .SetTag("location", "Klamath")
-                .SetField("bees", 29),
-            PointData.Measurement("census")
-                .SetTag("location", "Portland")
-                .SetField("ants", 40)
-        };
-
-        foreach (var point in points)
-        {
-            dbClient.WritePointAsync(point: point, database: database);
-        }
     }
 }

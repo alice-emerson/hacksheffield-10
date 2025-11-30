@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Grpc.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Touch_Grass_Simulator.Types;
@@ -27,6 +28,15 @@ public struct TextureGroup
     public Texture2D tall_sun_flower;
 }
 
+public struct SessionStats
+{
+    public int total_plants;
+    public int total_blue_flowers;
+    public int total_pink_flowers;
+    public int total_sun_flowers;
+    public int total_grass;
+}
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
@@ -45,6 +55,7 @@ public class Game1 : Game
     private EMouseMode currentToolOption = EMouseMode.WATERING_CAN;
     private UiPanel uiPanel;
     private InfluxDB db = new InfluxDB();
+    private SessionStats stats;
 
     public Game1()
     {
@@ -60,9 +71,7 @@ public class Game1 : Game
         // TODO: Add your initialization logic here
         _gameRenderTarget = new RenderTarget2D(GraphicsDevice, GAME_WIN_WIDTH, GAME_WIN_HEIGHT);
         _uiRenderTarget = new RenderTarget2D(GraphicsDevice, UI_WIN_WIDTH, UI_WIN_HEIGHT);
-        {
-            
-        }
+
         base.Initialize();
     }
 
@@ -114,6 +123,12 @@ public class Game1 : Game
         Texture2D itemFrame = Content.Load<Texture2D>("Textures/Item_Frame");
 
         uiPanel = new UiPanel(uiFrame, itemFrame, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, wateringCanOff, cutters);
+
+        stats.total_blue_flowers = 0;
+        stats.total_grass = 0;
+        stats.total_pink_flowers = 0;
+        stats.total_sun_flowers = 0;
+        stats.total_plants = 0;
     }
 
     protected override void Update(GameTime gameTime)
@@ -131,7 +146,7 @@ public class Game1 : Game
 
         currentToolOption = uiPanel.Update(currentMouseState, currentToolOption);
 
-        foregroundTileMap.Update(currentMouseState, currentToolOption, gameTime.ElapsedGameTime.Milliseconds);
+        stats = foregroundTileMap.Update(currentMouseState, currentToolOption, gameTime.ElapsedGameTime.Milliseconds, db, stats);
 
         base.Update(gameTime);
     }

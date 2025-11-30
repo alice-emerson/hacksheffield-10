@@ -6,6 +6,7 @@ using Touch_Grass_Simulator.Types;
 using System.IO;
 using System.Collections;
 using System;
+using InfluxDB3.Client.Write;
 
 namespace Touch_Grass_Simulator;
 
@@ -198,7 +199,7 @@ public class TileMap
         return tiles;
     }
 
-    public void Update(MouseState currentMouseState, EMouseMode currentTool, int elapsedTimeSinceToolUse)
+    public SessionStats Update(MouseState currentMouseState, EMouseMode currentTool, int elapsedTimeSinceToolUse, InfluxDB db, SessionStats currentStats)
     {
         if (currentMouseState.X < Game1.GAME_WIN_WIDTH * Game1.RENDER_SCALE 
             && currentMouseState.LeftButton == ButtonState.Pressed
@@ -206,9 +207,11 @@ public class TileMap
         {   
             this.elapsedTimeSinceToolUse = 0;
 
+            // Watering Plants
+            
             if (currentTool == EMouseMode.WATERING_CAN)
             {
-                (int,int) currentTile = getSelectedTile(currentMouseState);
+                (int,int) currentTile = GetSelectedTile(currentMouseState);
                 bool wateredPlant = true;
                 
                 switch (tiles[currentTile.Item1, currentTile.Item2])
@@ -263,17 +266,74 @@ public class TileMap
                                 break;
                             }
                 }
+
+                if (wateredPlant)
+                {
+                    db.dbClient.WritePointAsync(PointData.Measurement("Watered Plant").SetField("Count", 1));
+                }
+            }
+
+            // Adding new plants
+
+            if (currentTool == EMouseMode.PINK_FLOWER_SEEDS)
+            {
+                (int,int) currentTile = GetSelectedTile(currentMouseState);
+                tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_PINK_FLOWER;
+                currentStats.total_pink_flowers += 1;
+                currentStats.total_plants += 1;
+                PostSessionStats(db, currentStats);
+            }
+
+            if (currentTool == EMouseMode.BLUE_FLOWER_SEEDS)
+            {
+                (int,int) currentTile = GetSelectedTile(currentMouseState);
+                tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_BLUE_FLOWER;
+                currentStats.total_blue_flowers += 1;
+                currentStats.total_plants += 1;
+                PostSessionStats(db, currentStats);
+            }
+
+            if (currentTool == EMouseMode.SUNFLOWER_SEEDS)
+            {
+                (int,int) currentTile = GetSelectedTile(currentMouseState);
+                tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_SUN_FLOWER;
+                currentStats.total_sun_flowers += 1;
+                currentStats.total_plants += 1;
+                PostSessionStats(db, currentStats);
+            }
+
+            if (currentTool == EMouseMode.GRASS_SEEDS)
+            {
+                (int,int) currentTile = GetSelectedTile(currentMouseState);
+                tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_GRASS;
+                currentStats.total_grass += 1;
+                currentStats.total_plants += 1;
+                PostSessionStats(db, currentStats);
             }
         }
+
+        // Finish up
+
         this.elapsedTimeSinceToolUse += elapsedTimeSinceToolUse;
         if (this.elapsedTimeSinceToolUse > 10000) this.elapsedTimeSinceToolUse = 10000;
-        Console.WriteLine(this.elapsedTimeSinceToolUse);
+
+        return currentStats;
     }
 
-    public (int, int) getSelectedTile(MouseState currentMouseState)
+    public (int, int) GetSelectedTile(MouseState currentMouseState)
     {
         int column = (int)((currentMouseState.X / Game1.RENDER_SCALE) / Tile.TILE_SIZE);
         int row = (int)((currentMouseState.Y / Game1.RENDER_SCALE) / Tile.TILE_SIZE);
         return(row, column);
     } 
+
+    public void PostSessionStats(InfluxDB db, SessionStats stats)
+    {
+        db.dbClient.WritePointAsync(PointData.Measurement("SessionStats")
+                                        .SetField("Total Blue Flowers", stats.total_blue_flowers)
+                                        .SetField("Total Pink Flowers", stats.total_pink_flowers)
+                                        .SetField("Total Sunflowers", stats.total_sun_flowers)
+                                        .SetField("Total Grass", stats.total_grass)
+                                        .SetField("Overall Total Plants", stats.total_plants));
+    }
 }
