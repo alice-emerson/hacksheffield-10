@@ -116,13 +116,14 @@ public class Game1 : Game
         Texture2D sunSeeds = Content.Load<Texture2D>("Textures/small_sunflower");
         Texture2D grassSeeds = Content.Load<Texture2D>("Textures/small_grass");
         Texture2D cutters = Content.Load<Texture2D>("Textures/DIRT");
+        Texture2D hand = Content.Load<Texture2D>("Textures/DIRT");
 
-        customMouse = new CustomMouse(wateringCanOff, wateringCanOn, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, cutters, currentToolOption);
+        customMouse = new CustomMouse(wateringCanOff, wateringCanOn, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, cutters, hand, currentToolOption);
 
         Texture2D uiFrame = Content.Load<Texture2D>("Textures/UI_Panel");
         Texture2D itemFrame = Content.Load<Texture2D>("Textures/Item_Frame");
 
-        uiPanel = new UiPanel(uiFrame, itemFrame, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, wateringCanOff, cutters);
+        uiPanel = new UiPanel(uiFrame, itemFrame, pinkSeeds, blueSeeds, sunSeeds, grassSeeds, wateringCanOff, cutters, hand);
 
         stats.total_blue_flowers = 0;
         stats.total_grass = 0;

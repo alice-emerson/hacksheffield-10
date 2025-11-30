@@ -13,13 +13,15 @@ public class CustomMouse
     private Texture2D sunSeeds;
     private Texture2D grassSeeds;
     private Texture2D cutters;
+    private Texture2D hand;
+
     private EMouseMode currentMode;
     private bool isMouseClicked;
     private Vector2 currentMousePos;
 
     public CustomMouse(Texture2D standardTexture, Texture2D clickedTexture, Texture2D pinkSeeds, 
                         Texture2D blueSeeds, Texture2D sunSeeds, Texture2D grassSeeds, 
-                        Texture2D cutters, EMouseMode currentMode)
+                        Texture2D cutters, Texture2D hand, EMouseMode currentMode)
     {
         this.waterClickedTexture = clickedTexture;
         this.waterStandardTexture = standardTexture;
@@ -28,6 +30,7 @@ public class CustomMouse
         this.sunSeeds = sunSeeds;
         this.grassSeeds = grassSeeds;
         this.cutters = cutters;
+        this.hand = hand;
         this.currentMode = currentMode;
     }
 
@@ -70,6 +73,11 @@ public class CustomMouse
             case EMouseMode.GARDEN_CUTTERS:
                 {
                     _spriteBatch.Draw(cutters, currentMousePos, Color.White);
+                    break;
+                }
+            case EMouseMode.HAND:
+                {
+                    _spriteBatch.Draw(hand, currentMousePos, Color.White);
                     break;
                 }
         }

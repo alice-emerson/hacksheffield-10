@@ -7,4 +7,5 @@ public enum EMouseMode
     GRASS_SEEDS,
     WATERING_CAN,
     GARDEN_CUTTERS,
+    HAND,
 }

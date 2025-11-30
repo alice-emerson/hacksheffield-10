@@ -208,7 +208,7 @@ public class TileMap
             this.elapsedTimeSinceToolUse = 0;
 
             // Watering Plants
-            
+
             if (currentTool == EMouseMode.WATERING_CAN)
             {
                 (int,int) currentTile = GetSelectedTile(currentMouseState);
@@ -309,6 +309,25 @@ public class TileMap
                 currentStats.total_grass += 1;
                 currentStats.total_plants += 1;
                 PostSessionStats(db, currentStats);
+            }
+
+            // Touching Grass
+            
+            if (currentTool == EMouseMode.HAND)
+            {
+                (int,int) currentTile = GetSelectedTile(currentMouseState);
+                if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.SHORT_GRASS ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.MEDIUM_GRASS ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.TALL_GRASS)
+                {
+                    db.dbClient.WritePointAsync(PointData.Measurement("Touched Grass").SetField("Count", 1));
+                    Console.WriteLine("Touched Grass");
+                }
+                else if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.NONE) // Must be a flower since not grass or nothing
+                {
+                    db.dbClient.WritePointAsync(PointData.Measurement("Touched Flower").SetField("Count", 1));
+                    Console.WriteLine("Touched Flower");
+                }
             }
         }
 

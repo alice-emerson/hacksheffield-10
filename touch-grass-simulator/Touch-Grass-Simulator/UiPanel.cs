@@ -12,9 +12,11 @@ public class UiPanel
     private UiItem grassSeeds;
     private UiItem wateringCan;
     private UiItem gardenCutters;
+    private UiItem hand;
+
 
     public UiPanel(Texture2D panelFrame, Texture2D itemFrame, Texture2D pinkFlowerSeeds, Texture2D blueFlowerSeeds,
-                    Texture2D sunflowerSeeds, Texture2D grassSeeds, Texture2D wateringCan, Texture2D gardenCutters)
+                    Texture2D sunflowerSeeds, Texture2D grassSeeds, Texture2D wateringCan, Texture2D gardenCutters, Texture2D hand)
     {
         this.panelFrame = panelFrame;
         
@@ -24,6 +26,7 @@ public class UiPanel
         this.grassSeeds = new UiItem(grassSeeds, itemFrame, EMouseMode.GRASS_SEEDS, 3);
         this.wateringCan = new UiItem(wateringCan, itemFrame, EMouseMode.WATERING_CAN, 4);
         this.gardenCutters = new UiItem(gardenCutters, itemFrame, EMouseMode.GARDEN_CUTTERS, 5);
+        this.hand = new UiItem(hand, itemFrame, EMouseMode.HAND, 6);
     }
 
     public void Draw(SpriteBatch _spriteBatch)
@@ -35,6 +38,7 @@ public class UiPanel
         grassSeeds.Draw(_spriteBatch);
         wateringCan.Draw(_spriteBatch);
         gardenCutters.Draw(_spriteBatch);
+        hand.Draw(_spriteBatch);
     }
 
     public EMouseMode Update(MouseState mouseState, EMouseMode currentMouseMode)
@@ -46,6 +50,7 @@ public class UiPanel
         grassSeeds.Update(mouseState, ref newMouseMode);
         wateringCan.Update(mouseState, ref newMouseMode);
         gardenCutters.Update(mouseState, ref newMouseMode);
+        hand.Update(mouseState, ref newMouseMode);
         return newMouseMode;
     }
 }
