@@ -25,7 +25,6 @@ public struct TextureGroup
     public Texture2D short_sun_flower;
     public Texture2D medium_sun_flower;
     public Texture2D tall_sun_flower;
-
 }
 
 public class Game1 : Game
@@ -45,6 +44,7 @@ public class Game1 : Game
     private CustomMouse customMouse;
     private EMouseMode currentToolOption = EMouseMode.WATERING_CAN;
     private UiPanel uiPanel;
+    private InfluxDB db = new InfluxDB();
 
     public Game1()
     {

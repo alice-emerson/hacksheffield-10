@@ -39,7 +39,7 @@ public class UiItem
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 newMouseMode = this.mouseMode;
-                Console.WriteLine("Changed mouse mode");
+                // Console.WriteLine("Changed mouse mode");
             }
         }
         else
@@ -56,9 +56,9 @@ public class UiItem
         int bottomSide = ((int)outerPosition.Y + SIZE) * Game1.RENDER_SCALE;
 
         bool result = point.X > leftSide && point.X < rightSide && point.Y > topSide && point.Y < bottomSide;
-        Console.WriteLine(leftSide + " " + rightSide + " " + topSide + " " + bottomSide);
-        Console.WriteLine(point);
-        Console.WriteLine(result);
+        // Console.WriteLine(leftSide + " " + rightSide + " " + topSide + " " + bottomSide);
+        // Console.WriteLine(point);
+        // Console.WriteLine(result);
         return result;
     }
 }
