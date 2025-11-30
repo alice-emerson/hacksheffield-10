@@ -7,6 +7,7 @@ using System.IO;
 using System.Collections;
 using System;
 using InfluxDB3.Client.Write;
+using Grpc.Net.Client.Balancer;
 
 namespace Touch_Grass_Simulator;
 
@@ -203,7 +204,7 @@ public class TileMap
     {
         if (currentMouseState.X < Game1.GAME_WIN_WIDTH * Game1.RENDER_SCALE 
             && currentMouseState.LeftButton == ButtonState.Pressed
-            && this.elapsedTimeSinceToolUse > 500) // Not in menu, button pressed, cooldown expired.
+            && this.elapsedTimeSinceToolUse > 250) // Not in menu, button pressed, cooldown expired.
         {   
             this.elapsedTimeSinceToolUse = 0;
 
@@ -278,37 +279,49 @@ public class TileMap
             if (currentTool == EMouseMode.PINK_FLOWER_SEEDS)
             {
                 (int,int) currentTile = GetSelectedTile(currentMouseState);
-                tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_PINK_FLOWER;
-                currentStats.total_pink_flowers += 1;
-                currentStats.total_plants += 1;
-                PostSessionStats(db, currentStats);
+                if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.NONE)
+                {
+                    tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_PINK_FLOWER;
+                    currentStats.total_pink_flowers += 1;
+                    currentStats.total_plants += 1;
+                    PostSessionStats(db, currentStats);
+                } 
             }
 
             if (currentTool == EMouseMode.BLUE_FLOWER_SEEDS)
             {
                 (int,int) currentTile = GetSelectedTile(currentMouseState);
-                tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_BLUE_FLOWER;
-                currentStats.total_blue_flowers += 1;
-                currentStats.total_plants += 1;
-                PostSessionStats(db, currentStats);
+                if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.NONE)
+                {
+                    tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_BLUE_FLOWER;
+                    currentStats.total_blue_flowers += 1;
+                    currentStats.total_plants += 1;
+                    PostSessionStats(db, currentStats);
+                }
             }
 
             if (currentTool == EMouseMode.SUNFLOWER_SEEDS)
             {
                 (int,int) currentTile = GetSelectedTile(currentMouseState);
-                tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_SUN_FLOWER;
-                currentStats.total_sun_flowers += 1;
-                currentStats.total_plants += 1;
-                PostSessionStats(db, currentStats);
+                if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.NONE)
+                {
+                    tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_SUN_FLOWER;
+                    currentStats.total_sun_flowers += 1;
+                    currentStats.total_plants += 1;
+                    PostSessionStats(db, currentStats);
+                }
             }
 
             if (currentTool == EMouseMode.GRASS_SEEDS)
             {
                 (int,int) currentTile = GetSelectedTile(currentMouseState);
-                tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_GRASS;
-                currentStats.total_grass += 1;
-                currentStats.total_plants += 1;
-                PostSessionStats(db, currentStats);
+                if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.NONE)
+                {
+                    tiles[currentTile.Item1, currentTile.Item2] = ETiles.SHORT_GRASS;
+                    currentStats.total_grass += 1;
+                    currentStats.total_plants += 1;
+                    PostSessionStats(db, currentStats);
+                }
             }
 
             // Touching Grass
@@ -323,10 +336,58 @@ public class TileMap
                     db.dbClient.WritePointAsync(PointData.Measurement("Touched Grass").SetField("Count", 1));
                     Console.WriteLine("Touched Grass");
                 }
-                else if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.NONE) // Must be a flower since not grass or nothing
+                else if (tiles[currentTile.Item1, currentTile.Item2] != ETiles.NONE) // Must be a flower since not grass or nothing
                 {
                     db.dbClient.WritePointAsync(PointData.Measurement("Touched Flower").SetField("Count", 1));
                     Console.WriteLine("Touched Flower");
+                }
+            }
+
+            // Deleting Plants
+
+            if (currentTool == EMouseMode.GARDEN_CUTTERS)
+            {
+                (int,int) currentTile = GetSelectedTile(currentMouseState);
+                if (tiles[currentTile.Item1, currentTile.Item2] != ETiles.NONE)
+                {
+                    if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.SHORT_GRASS ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.MEDIUM_GRASS ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.TALL_GRASS)
+                    {
+                        currentStats.total_grass -= 1;
+                        currentStats.total_plants -= 1;
+                        tiles[currentTile.Item1, currentTile.Item2] = ETiles.NONE;
+                    }
+
+                    if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.SHORT_BLUE_FLOWER ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.MEDIUM_BLUE_FLOWER ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.TALL_BLUE_FLOWER)
+                    {
+                        currentStats.total_blue_flowers -= 1;
+                        currentStats.total_plants -= 1;
+                        tiles[currentTile.Item1, currentTile.Item2] = ETiles.NONE;
+                    }
+
+                    if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.SHORT_PINK_FLOWER ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.MEDIUM_PINK_FLOWER ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.TALL_PINK_FLOWER)
+                    {
+                        currentStats.total_pink_flowers -= 1;
+                        currentStats.total_plants -= 1;
+                        tiles[currentTile.Item1, currentTile.Item2] = ETiles.NONE;
+                    }
+
+                    if (tiles[currentTile.Item1, currentTile.Item2] == ETiles.SHORT_SUN_FLOWER ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.MEDIUM_SUN_FLOWER ||
+                    tiles[currentTile.Item1, currentTile.Item2] == ETiles.TALL_SUN_FLOWER)
+                    {
+                        currentStats.total_sun_flowers -= 1;
+                        currentStats.total_plants -= 1;
+                        tiles[currentTile.Item1, currentTile.Item2] = ETiles.NONE;
+                    }
+
+                    db.dbClient.WritePointAsync(PointData.Measurement("Destroyed Wildlife").SetField("Count", 1));
+                    PostSessionStats(db, currentStats);
                 }
             }
         }
